@@ -83,7 +83,7 @@ class NubeLocal(Gtk.Application):
             parsed = urlparse(uri)
             if parsed.scheme == 'http' and parsed.hostname == '127.0.0.1' and parsed.port == 47831:
                 decision.use()
-            elif parsed.scheme == 'https' and parsed.hostname == 'account.proton.me':
+            elif parsed.scheme == 'https' and (parsed.hostname == 'account.proton.me' or (parsed.hostname=='github.com' and parsed.path.startswith('/FerCueA/archivia/'))):
                 # Login happens only in the official website in the user's browser.
                 Gio.AppInfo.launch_default_for_uri(uri, None)
                 decision.ignore()

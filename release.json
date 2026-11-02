@@ -1,9 +1,9 @@
 {
   "name": "Proton Drive (cliente no oficial)",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "platform": "linux",
   "arch": "x64",
-  "serviceSha256": "e44f8e3e69312dbb77099a90103f722033bdffd2a2ef65c81243904e8f4a5aed",
+  "serviceSha256": "43011d4f937cba1880a8b89820164cb6238f3bc433382ac1d34aae478b35cb50",
   "cpuTarget": "x86_64-sse4.2",
   "ubuntuTarget": "24.04"
 }

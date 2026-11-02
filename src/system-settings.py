@@ -10,6 +10,8 @@ import sys
 import tarfile
 import tempfile
 import shutil
+import re,stat
+from contextlib import contextmanager
 import gi
 from gi.repository import Gio, GLib
 PROJECT=Path(__file__).resolve().parents[1]
@@ -140,6 +142,55 @@ def validate_archive(members):
         parts=Path(m.name).parts
         if m.name != str(Path(m.name)) or not parts or parts[0]!='nube-local' or '..' in parts or Path(m.name).is_absolute() or not (m.isfile() or m.isdir()):raise ValueError('El instalador contiene rutas no permitidas.')
 
+def launch_archive(archive,members):
+    target=Path(tempfile.mkdtemp(prefix='proton-drive-update-'))
+    try:
+        for member in members:
+            out=target/member.name
+            if member.isdir():out.mkdir(parents=True,exist_ok=True)
+            else:
+                out.parent.mkdir(parents=True,exist_ok=True)
+                with archive.extractfile(member) as source,out.open('wb') as output:shutil.copyfileobj(source,output)
+                out.chmod(member.mode&0o755)
+        log=(STATE/'update.log').open('a')
+        try:subprocess.Popen([sys.executable,str(PROJECT/'src/system-settings.py'),'--apply-update',str(target)],stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True)
+        finally:log.close()
+    except Exception:
+        shutil.rmtree(target);raise
+    return {'updating':True}
+
+@contextmanager
+def downloaded_archive(filename,sha256,version):
+    if not re.fullmatch('[a-f0-9]{64}',sha256) or not re.fullmatch(r'\d+\.\d+\.\d+',version):raise ValueError('Datos de actualización no válidos.')
+    package=Path(filename);expected=STATE/'updates'/(sha256+'.run')
+    if package!=expected or package.resolve()!=package or package.is_symlink():raise ValueError('El instalador no está en la carpeta privada de descargas.')
+    info=package.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_size>200*1024**2:raise ValueError('Instalador no válido.')
+    with package.open('rb') as original,tempfile.TemporaryFile() as snapshot:
+        shutil.copyfileobj(original,snapshot);snapshot.seek(0)
+        if hashlib.file_digest(snapshot,'sha256').hexdigest()!=sha256:raise ValueError('El SHA-256 del instalador ha cambiado; no se instala.')
+        snapshot.seek(0);lines=[snapshot.readline() for _ in range(8)]
+        if lines[-1]!=b'__PROTON_DRIVE_ARCHIVE__\n':raise ValueError('No es un instalador compatible.')
+        with tarfile.open(fileobj=snapshot,mode='r:gz') as archive:
+            members=archive.getmembers();validate_archive(members)
+            member=archive.getmember('nube-local/release.json')
+            if not member.isfile() or member.size>65536:raise ValueError('Metadatos de versión no válidos.')
+            release=json.load(archive.extractfile(member))
+            if release.get('version')!=version or release.get('platform')!='linux' or release.get('arch')!='x64':raise ValueError('La versión o arquitectura del instalador no coincide.')
+            yield archive,members,{'version':version,'sha256':sha256,'repository':'FerCueA/archivia'}
+
+def install_downloaded(filename,sha256,version,confirm=None):
+    with downloaded_archive(filename,sha256,version) as (archive,members,metadata):
+        if confirm is None:
+            gi.require_version('Gtk','3.0')
+            from gi.repository import Gtk
+            Gtk.init(None);prompt=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,buttons=Gtk.ButtonsType.OK_CANCEL,text='¿Instalar Archivia '+version+' desde GitHub?')
+            prompt.format_secondary_text('Origen: FerCueA/archivia\nSHA-256 verificado: '+sha256+'\n\nSe conservarán la sesión, los ajustes, los documentos y una copia de la aplicación anterior. El programa se reiniciará.')
+            approved=prompt.run()==Gtk.ResponseType.OK;prompt.destroy()
+        else:approved=confirm(metadata)
+        if not approved:return {'cancelled':True}
+        return launch_archive(archive,members)
+
 def dialog(mode):
     gi.require_version('Gtk','3.0')
     from gi.repository import Gtk
@@ -163,23 +214,10 @@ def dialog(mode):
             members=archive.getmembers()
             validate_archive(members)
             prompt=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,buttons=Gtk.ButtonsType.OK_CANCEL,text='¿Instalar esta actualización de Proton Drive?')
-            prompt.format_secondary_text('Archivo: '+package.name+'\n\nSe conservarán la sesión, los ajustes y los documentos. La aplicación se reiniciará.\n\nInstala únicamente paquetes de una fuente en la que confíes. Este proyecto no dispone de un servidor de actualizaciones ni de firma digital.\n\nSHA-256: '+digest)
+            prompt.format_secondary_text('Archivo: '+package.name+'\n\nSe conservarán la sesión, los ajustes y los documentos. La aplicación se reiniciará.\n\nInstala únicamente paquetes de una fuente en la que confíes. Las versiones oficiales de este proyecto se publican en github.com/FerCueA/archivia. Los paquetes se verifican por SHA-256; no hay firma digital independiente.\n\nSHA-256: '+digest)
             approved=prompt.run()==Gtk.ResponseType.OK;prompt.destroy()
             if not approved:return {'cancelled':True}
-            # Snapshot the exact opened package and extract only regular files/directories.
-            target=Path(tempfile.mkdtemp(prefix='proton-drive-update-'))
-            try:
-                for m in members:
-                    out=target/m.name
-                    if m.isdir():out.mkdir(parents=True,exist_ok=True)
-                    else:
-                        out.parent.mkdir(parents=True,exist_ok=True)
-                        with archive.extractfile(m) as src,out.open('wb') as dst:shutil.copyfileobj(src,dst)
-                        out.chmod(m.mode&0o755)
-                log=(STATE/'update.log').open('a')
-                subprocess.Popen([sys.executable,str(PROJECT/'src/system-settings.py'),'--apply-update',str(target)],stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True)
-            except Exception:
-                shutil.rmtree(target);raise
+            return launch_archive(archive,members)
     return {'updating':True}
 
 def update_healthy(expected):
@@ -238,6 +276,9 @@ if __name__=='__main__':
         elif mode=='--external-folder':result=dialog('external')
         elif mode=='--folder':result=dialog('folder')
         elif mode=='--update':result=dialog('update')
+        elif mode=='--install-downloaded':result=install_downloaded(*sys.argv[2:5])
+        elif mode=='--inspect-downloaded':
+            with downloaded_archive(*sys.argv[2:5]) as (_,__,metadata):result=metadata
         elif mode=='--apply-update':
             result=apply_update(sys.argv[2])
         else:raise ValueError('Acción no válida')

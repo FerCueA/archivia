@@ -54,7 +54,7 @@ for dirname in ('bin', 'assets'):
 (staging / 'src').mkdir()
 for filename in ('desktop.py', 'tray.py', 'launcher.py', 'system-settings.py', 'preview-render.py', 'version-manager.py', 'bootstrap.py', 'platform-check.py'):
     shutil.copy2(SOURCE / 'src' / filename, staging / 'src' / filename)
-for filename in ('PROTON-SDK-LICENSE.md', 'THIRD-PARTY-NOTICES.txt', 'README.md', 'COMPATIBILIDAD.md', 'release.json'):
+for filename in ('PROTON-SDK-LICENSE.md', 'THIRD-PARTY-NOTICES.txt', 'README.md', 'COMPATIBILIDAD.md', 'LICENSE', 'BUN-LICENSE.md', 'THIRD-PARTY-SOURCES.md', 'release.json'):
     shutil.copy2(SOURCE / filename, staging / filename)
 
 service_url='http://127.0.0.1:'+str(int(os.environ.get('NUBE_LOCAL_PORT','47831')))
@@ -166,7 +166,7 @@ except (OSError,ValueError):
 AUTOSTART.write_text(desktop.replace('Exec="'+str(launcher)+'"','Exec="'+str(launcher)+'" --background').replace('StartupNotify=true','StartupNotify=false')+
                      'X-GNOME-Autostart-enabled='+str(enabled).lower()+'\nX-GNOME-Autostart-Delay=10\n')
 AUTOSTART.chmod(0o644)
-(INSTALL / 'installation.json').write_text(json.dumps({'name':'Proton Drive','version':'0.15.0','autostart':enabled},indent=2))
+(INSTALL / 'installation.json').write_text(json.dumps({'name':'Proton Drive','version':'0.16.0','autostart':enabled},indent=2))
 print('Proton Drive (cliente no oficial) instalado en', INSTALL)
 print('Inicio automático:', 'habilitado' if enabled else 'deshabilitado', '· Acceso disponible en el menú de aplicaciones.')
 if '--no-launch' not in sys.argv:

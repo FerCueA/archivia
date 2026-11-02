@@ -11,7 +11,7 @@ Aplicación de escritorio para Linux que reúne sincronización con Proton Drive
 - Duplicados por tamaño y SHA-256, con comprobación del contenido antes de retirar copias.
 - Organización por tipo y fecha, EXIF, fechas del nombre, carpetas protegidas y selección de movimientos con vista previa.
 - Historial, recuperación, revisión de cambios masivos, límites de transferencia y pausa en conexiones de uso medido.
-- Exportación/importación de ajustes y actualización manual conservando una copia de la aplicación anterior.
+- Exportación/importación de ajustes y actualizaciones desde GitHub Releases conservando una copia de la aplicación anterior.
 
 La interfaz se divide en siete pestañas: Proton Drive, Disco externo, Duplicados, Organizar, Actividad, Ajustes y Actualizaciones.
 
@@ -72,3 +72,11 @@ El código propio se publica bajo [MIT](LICENSE). Los componentes de terceros co
 ## Privacidad
 
 No subas documentos, sesiones, contraseñas, bases de datos ni copias de la carpeta de estado. Al comunicar un fallo, oculta rutas personales, direcciones de correo y cualquier credencial de los registros. Los ajustes exportados pueden contener rutas de carpetas.
+
+## Instalación y actualizaciones
+
+Descarga `Archivia-VERSION-linux-x64.run` de https://github.com/FerCueA/archivia/releases/latest y ejecútalo con `bash Archivia-VERSION-linux-x64.run`. El instalador añade Proton Drive al menú de aplicaciones; no necesitas Node ni usar un CLI de sincronización.
+
+En **Actualizaciones** puedes buscar una versión, descargarla y confirmar su instalación. La consulta automática diaria es opcional; no descarga ni instala sin tu intervención. Se usa el repositorio público FerCueA/archivia sin enviar las credenciales de Proton. Se verifican el tamaño y SHA-256 del instalador, y se conservan los ajustes, documentos y una versión anterior para restaurar. SHA-256 comprueba integridad; no es una firma digital independiente de GitHub.
+
+Para publicar una versión: actualiza las versiones y ejecuta `bash scripts/build.sh`, las pruebas y `python3 scripts/package.py`. Sube los cambios y una etiqueta `vVERSION`. GitHub Actions prueba en Ubuntu 24.04 y publica el instalador, fuentes y SHA256SUMS.txt solo después de superar las comprobaciones. Véase THIRD-PARTY-SOURCES.md para reconstrucción y componentes de terceros.

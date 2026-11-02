@@ -1,0 +1,8 @@
+{
+  "version": "6.3.1",
+  "commit": "36198c3369ab8d4a02d70372d62f1aa8bc247dcb",
+  "repository": "https://github.com/ProtonMail/openpgpjs",
+  "npmTarball": "https://registry.npmjs.org/@protontech/openpgp/-/openpgp-6.3.1.tgz",
+  "sourceArchive": "openpgp-6.3.1-source.tar.gz",
+  "sha256": "454691e6a27087169a3cd763f705287c5c60f7a81b572df0f7a1d0ac30c8576a"
+}

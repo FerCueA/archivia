@@ -36,7 +36,7 @@ cp "$project_dir/src/external-sync.ts" src/external-sync.ts
 cp "$project_dir/src/disk-review.ts" src/disk-review.ts
 cp "$project_dir/src/duplicates.ts" src/duplicates.ts
 cp "$project_dir/src/file-operations.ts" src/file-operations.ts
-for module in activity recent-folders document-preview disk-diagnostics cloud-recovery organizer organization-date creation-time photo-date organization-rules cloud-safety run-health settings-transfer; do cp "$project_dir/src/$module.ts" "src/$module.ts"; done
+for module in activity recent-folders document-preview disk-diagnostics cloud-recovery organizer organization-date creation-time photo-date organization-rules cloud-safety run-health settings-transfer release-updater; do cp "$project_dir/src/$module.ts" "src/$module.ts"; done
 "$build_dir/runtime/node_modules/.bin/bun" build src/nube-connection.ts --target bun --outfile "$project_dir/dist/connection.js"
 mkdir -p "$project_dir/bin"
 BUN_INSTALL="$build_dir/bun-install" BUN_INSTALL_CACHE_DIR="$build_dir/bun-cache" "$build_dir/runtime/node_modules/.bin/bun" build "$project_dir/dist/connection.js" --compile --target=bun-linux-x64-baseline --outfile "$project_dir/bin/nube-local-service"

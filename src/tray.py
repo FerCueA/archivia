@@ -250,6 +250,9 @@ def apply_state(state):
             notify_mint('external:' + body, 'Sincronización del disco externo', body)
         elif state and state.get('meteredPaused'):
             notify_mint('metered', 'Sincronización pausada', 'La conexión es de uso medido. Se reanudará al cambiar de red o desactivar esta opción en Ajustes.')
+        elif state and state.get('updates', {}).get('candidate'):
+            version=state['updates']['candidate']['version']
+            notify_mint('update:'+version,'Actualización disponible','Archivia '+version+' está disponible. Abre la aplicación y entra en Actualizaciones para revisarla.')
         elif state:
             # Clear the persistent fingerprint when attention is no longer needed.
             global last_notification

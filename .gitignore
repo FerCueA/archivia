@@ -32,3 +32,5 @@ tokens.json
 auth-session*.json
 *.pem
 *.key
+
+updates.json

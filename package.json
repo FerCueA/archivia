@@ -1,6 +1,6 @@
 {
   "name": "archivia",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "private": true,
   "type": "module",
   "description": "Cliente personal de sincronización para Linux, en desarrollo",
