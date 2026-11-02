@@ -17,7 +17,7 @@ La interfaz se divide en siete pestañas: Proton Drive, Disco externo, Duplicado
 
 ## Estado y compatibilidad
 
-Versión de desarrollo: **0.15.0**. No se recomienda tratar una sincronización como única copia de seguridad.
+Versión de desarrollo: **0.16.0**. No se recomienda tratar una sincronización como única copia de seguridad.
 
 - Linux Mint 22.3 / Cinnamon / X11: utilizado y comprobado en el equipo de desarrollo.
 - Ubuntu Desktop 24.04 x86-64: dependencias, 130 pruebas Bun, 26 pruebas Python y prueba GTK/WebKit con Secret Service en un contenedor.
@@ -49,7 +49,7 @@ La carpeta predeterminada es `~/ProtonDrive`, vinculada a la raíz de **Mis arch
 
 ## Actualizaciones
 
-Actualmente se instala manualmente un archivo `.run` desde la pestaña Actualizaciones. La comprobación automática de versiones de GitHub **todavía no está conectada**. Este repositorio prepara la publicación de instaladores en [Releases](https://github.com/FerCueA/archivia/releases); crear una etiqueta Git por sí sola no genera un instalador.
+La pestaña Actualizaciones consulta las versiones estables de [GitHub Releases](https://github.com/FerCueA/archivia/releases), descarga el instalador y permite confirmar su instalación después de verificarlo. También admite seleccionar un `.run` manualmente. Una etiqueta `vVERSION` activa la compilación, las pruebas y la publicación automática de los archivos.
 
 ## Pruebas
 
