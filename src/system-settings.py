@@ -191,12 +191,14 @@ def install_downloaded(filename,sha256,version,confirm=None):
         if not approved:return {'cancelled':True}
         return launch_archive(archive,members)
 
-def dialog(mode):
+def dialog(mode,initial=None):
     gi.require_version('Gtk','3.0')
     from gi.repository import Gtk
     Gtk.init(None)
     choose=Gtk.FileChooserDialog(title='Carpeta para organizar' if mode=='organizer' else 'Carpeta para analizar duplicados' if mode=='duplicates' else 'Carpeta de sincronización' if mode in ('folder','external') else 'Instalar actualización de Proton Drive',action=Gtk.FileChooserAction.SELECT_FOLDER if mode in ('folder','external','duplicates','organizer') else Gtk.FileChooserAction.OPEN)
     choose.add_buttons('Cancelar',Gtk.ResponseType.CANCEL,'Seleccionar',Gtk.ResponseType.OK)
+    choose.set_default_size(900,600)
+    if initial and Path(initial).is_dir():choose.set_current_folder(str(Path(initial)))
     if mode=='update':
         file_filter=Gtk.FileFilter();file_filter.set_name('Instalador Proton Drive (*.run)');file_filter.add_pattern('*.run');choose.add_filter(file_filter)
     result=choose.run();filename=choose.get_filename() if result==Gtk.ResponseType.OK else None;choose.destroy()
@@ -265,8 +267,8 @@ if __name__=='__main__':
         elif mode=='--autostart':autostart(sys.argv[2]=='true');result={'ok':True}
         elif mode=='--open-folder':Gio.AppInfo.launch_default_for_uri(Path(sys.argv[2]).as_uri(),None);result={'ok':True}
         elif mode=='--eject':result=eject_disk(*sys.argv[2:6])
-        elif mode=='--duplicates-folder':result=dialog('duplicates')
-        elif mode=='--organizer-folder':result=dialog('organizer')
+        elif mode=='--duplicates-folder':result=dialog('duplicates',sys.argv[2] if len(sys.argv)>2 else None)
+        elif mode=='--organizer-folder':result=dialog('organizer',sys.argv[2] if len(sys.argv)>2 else None)
         elif mode=='--open-trash':Gio.AppInfo.launch_default_for_uri('trash:///',None);result={'ok':True}
         elif mode=='--reveal':
             bus=Gio.bus_get_sync(Gio.BusType.SESSION,None)
@@ -274,7 +276,7 @@ if __name__=='__main__':
             except Exception:Gio.AppInfo.launch_default_for_uri(Path(sys.argv[2]).parent.as_uri(),None)
             result={'ok':True}
         elif mode=='--external-folder':result=dialog('external')
-        elif mode=='--folder':result=dialog('folder')
+        elif mode=='--folder':result=dialog('folder',sys.argv[2] if len(sys.argv)>2 else None)
         elif mode=='--update':result=dialog('update')
         elif mode=='--install-downloaded':result=install_downloaded(*sys.argv[2:5])
         elif mode=='--inspect-downloaded':

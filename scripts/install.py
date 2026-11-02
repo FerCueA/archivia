@@ -166,7 +166,7 @@ except (OSError,ValueError):
 AUTOSTART.write_text(desktop.replace('Exec="'+str(launcher)+'"','Exec="'+str(launcher)+'" --background').replace('StartupNotify=true','StartupNotify=false')+
                      'X-GNOME-Autostart-enabled='+str(enabled).lower()+'\nX-GNOME-Autostart-Delay=10\n')
 AUTOSTART.chmod(0o644)
-(INSTALL / 'installation.json').write_text(json.dumps({'name':'Proton Drive','version':'0.16.0','autostart':enabled},indent=2))
+(INSTALL / 'installation.json').write_text(json.dumps({'name':'Proton Drive','version':'0.16.1','autostart':enabled},indent=2))
 print('Proton Drive (cliente no oficial) instalado en', INSTALL)
 print('Inicio automático:', 'habilitado' if enabled else 'deshabilitado', '· Acceso disponible en el menú de aplicaciones.')
 if '--no-launch' not in sys.argv:

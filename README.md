@@ -17,7 +17,7 @@ La interfaz se divide en siete pestañas: Proton Drive, Disco externo, Duplicado
 
 ## Estado y compatibilidad
 
-Versión de desarrollo: **0.16.0**. No se recomienda tratar una sincronización como única copia de seguridad.
+Versión de desarrollo: **0.16.1**. No se recomienda tratar una sincronización como única copia de seguridad.
 
 - Linux Mint 22.3 / Cinnamon / X11: utilizado y comprobado en el equipo de desarrollo.
 - Ubuntu Desktop 24.04 x86-64: dependencias, 130 pruebas Bun, 26 pruebas Python y prueba GTK/WebKit con Secret Service en un contenedor.

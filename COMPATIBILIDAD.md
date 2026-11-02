@@ -1,4 +1,4 @@
-# Compatibilidad de Proton Drive no oficial · 0.16.0
+# Compatibilidad de Proton Drive no oficial · 0.16.1
 
 | Entorno | Comprobaciones realizadas | Alcance |
 |---|---|---|
@@ -30,7 +30,7 @@ Las notificaciones, el inicio automático, la papelera, el selector de archivos 
 ## Comprobar sin instalar
 
 ```bash
-bash Archivia-0.16.0-linux-x64.run --check
+bash Archivia-0.16.1-linux-x64.run --check
 ```
 
 El diagnóstico no modifica la aplicación. Comprueba x86-64, SSE4.2, glibc y bibliotecas; informa de componentes opcionales. El ejecutable usa el objetivo `bun-linux-x64-baseline`, sin exigir AVX2. Las distribuciones o arquitecturas sin dependencias compatibles no quedan soportadas por mostrar este diagnóstico.
