@@ -1,0 +1,19 @@
+{
+  "name": "archivia",
+  "version": "0.15.0",
+  "private": true,
+  "type": "module",
+  "description": "Cliente personal de sincronización para Linux, en desarrollo",
+  "scripts": {
+    "test": "node --test",
+    "preview": "node src/preview.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FerCueA/archivia.git"
+  }
+}

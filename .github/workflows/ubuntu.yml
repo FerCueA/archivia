@@ -1,0 +1,30 @@
+name: Ubuntu 24.04 checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  ubuntu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Desktop dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gi gir1.2-gtk-3.0 gir1.2-webkit2-4.1 gir1.2-ayatanaappindicator3-0.1 libsecret-1-0 gnome-keyring python3-pil poppler-utils dbus-x11 xvfb xauth git patch ripgrep
+      - name: Build standalone Linux x64 application
+        run: bash scripts/build.sh
+      - name: Unit and integration tests
+        run: |
+          work/build/runtime/node_modules/.bin/bun test ./tests/*.bun.ts
+          python3 -m unittest discover -s tests -p 'test_*.py'
+          node --test tests/planner.test.js tests/connection-http.test.js
+          python3 scripts/install.py --check
+      - name: Isolated desktop smoke test
+        env:
+          XDG_CURRENT_DESKTOP: ubuntu:GNOME
+          XDG_SESSION_TYPE: x11
+          WEBKIT_DISABLE_COMPOSITING_MODE: '1'
+        run: dbus-run-session -- xvfb-run -a python3 tests/desktop_smoke.py

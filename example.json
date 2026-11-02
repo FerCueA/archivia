@@ -1,0 +1,5 @@
+{
+  "local": {"documentos/nota.txt": "contenido-nuevo", "foto.jpg": "foto"},
+  "remote": {"documentos/nota.txt": "contenido-anterior", "nube.txt": "archivo-remoto"},
+  "baseline": {"documentos/nota.txt": "contenido-anterior"}
+}

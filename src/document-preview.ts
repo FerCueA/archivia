@@ -1,0 +1,8 @@
+import {mkdtemp,writeFile,rm} from 'node:fs/promises';import path from 'node:path';
+export class DocumentPreview{
+ private processes=new Set<any>();private tasks=new Set<Promise<any>>();private closed=false;
+ constructor(private data:string,private helper:string){}
+ render(snapshot:{bytes:Uint8Array,name:string},page=1){if(this.closed)throw new Error('La aplicación se está cerrando.');const task=this.run(snapshot,page).finally(()=>this.tasks.delete(task));this.tasks.add(task);return task;}
+ private async run(snapshot:{bytes:Uint8Array,name:string},page:number){const dir=await mkdtemp(path.join(this.data,'document-preview-'));let child:any;try{const file=path.join(dir,'input');await writeFile(file,snapshot.bytes,{flag:'wx',mode:0o600});if(this.closed)throw Error('Vista previa cancelada.');child=Bun.spawn(['/usr/bin/python3',this.helper,file,path.extname(snapshot.name),String(Math.max(1,Math.min(Math.floor(page)||1,10000)))],{stdout:'pipe',stderr:'pipe'});this.processes.add(child);const timer=setTimeout(()=>child.kill(),35000);try{const [text]=await Promise.all([new Response(child.stdout).text(),new Response(child.stderr).text()]);await child.exited;const result=JSON.parse(text);if(result.kind==='image'&&(!/^[-A-Za-z0-9+/=\r\n]+$/.test(result.data)||result.data.length>12*1024**2))throw Error('Vista previa no válida.');return {...result,name:snapshot.name};}finally{clearTimeout(timer);}}finally{if(child)this.processes.delete(child);await rm(dir,{recursive:true,force:true});}}
+ async close(){this.closed=true;for(const p of this.processes)p.kill();await Promise.allSettled([...this.tasks]);}
+}
