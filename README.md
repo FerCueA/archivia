@@ -9,7 +9,7 @@ Aplicación de escritorio para Linux que reúne sincronización con Proton Drive
 - Sincronización bidireccional con **Mis archivos** de Proton Drive: subidas, descargas, movimientos y borrados recuperables.
 - Sincronización entre la carpeta local y un disco externo identificado, con revisión de cambios y expulsión segura.
 - Duplicados por tamaño y SHA-256, con comprobación del contenido antes de retirar copias.
-- Organización por tipo y fecha, EXIF, fechas del nombre, carpetas protegidas y selección de movimientos con vista previa.
+- Organización por tipo y fecha, EXIF, fechas del nombre y carpetas protegidas. Interfaz en tres pasos con ejemplo de estructura, búsqueda en la propuesta y selección de movimientos; cambiar los ajustes exige preparar una nueva vista previa.
 - Historial, recuperación, revisión de cambios masivos, límites de transferencia y pausa en conexiones de uso medido.
 - Exportación/importación de ajustes y actualizaciones desde GitHub Releases conservando una copia de la aplicación anterior.
 
@@ -17,7 +17,7 @@ La interfaz se divide en siete pestañas: Proton Drive, Disco externo, Duplicado
 
 ## Estado y compatibilidad
 
-Versión de desarrollo: **0.16.1**. No se recomienda tratar una sincronización como única copia de seguridad.
+Versión de desarrollo: **0.16.2**. No se recomienda tratar una sincronización como única copia de seguridad.
 
 - Linux Mint 22.3 / Cinnamon / X11: utilizado y comprobado en el equipo de desarrollo.
 - Ubuntu Desktop 24.04 x86-64: dependencias, 130 pruebas Bun, 26 pruebas Python y prueba GTK/WebKit con Secret Service en un contenedor.
