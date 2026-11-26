@@ -142,6 +142,18 @@ def validate_archive(members):
         parts=Path(m.name).parts
         if m.name != str(Path(m.name)) or not parts or parts[0]!='nube-local' or '..' in parts or Path(m.name).is_absolute() or not (m.isfile() or m.isdir()):raise ValueError('El instalador contiene rutas no permitidas.')
 
+@contextmanager
+def installer_archive(file):
+    lines=[file.readline() for _ in range(8)]
+    if lines[-1]!=b'__PROTON_DRIVE_ARCHIVE__\n':raise ValueError('No es un instalador compatible.')
+    # Keep the gzip payload in its own seekable file. tarfile's gzip reader
+    # seeks to offset zero when extracting members; the .run shell header must
+    # not be included in that file.
+    with tempfile.TemporaryFile() as payload:
+        shutil.copyfileobj(file,payload);payload.seek(0)
+        with tarfile.open(fileobj=payload,mode='r:gz') as archive:
+            yield archive
+
 def launch_archive(archive,members):
     target=Path(tempfile.mkdtemp(prefix='proton-drive-update-'))
     try:
@@ -169,9 +181,8 @@ def downloaded_archive(filename,sha256,version):
     with package.open('rb') as original,tempfile.TemporaryFile() as snapshot:
         shutil.copyfileobj(original,snapshot);snapshot.seek(0)
         if hashlib.file_digest(snapshot,'sha256').hexdigest()!=sha256:raise ValueError('El SHA-256 del instalador ha cambiado; no se instala.')
-        snapshot.seek(0);lines=[snapshot.readline() for _ in range(8)]
-        if lines[-1]!=b'__PROTON_DRIVE_ARCHIVE__\n':raise ValueError('No es un instalador compatible.')
-        with tarfile.open(fileobj=snapshot,mode='r:gz') as archive:
+        snapshot.seek(0)
+        with installer_archive(snapshot) as archive:
             members=archive.getmembers();validate_archive(members)
             member=archive.getmember('nube-local/release.json')
             if not member.isfile() or member.size>65536:raise ValueError('Metadatos de versión no válidos.')
@@ -210,9 +221,7 @@ def dialog(mode,initial=None):
     with package.open('rb') as original, tempfile.TemporaryFile() as file:
         shutil.copyfileobj(original,file);file.seek(0)
         digest=hashlib.file_digest(file,'sha256').hexdigest();file.seek(0)
-        lines=[file.readline() for _ in range(8)]
-        if lines[-1]!=b'__PROTON_DRIVE_ARCHIVE__\n':raise ValueError('No es un instalador compatible de Proton Drive.')
-        with tarfile.open(fileobj=file,mode='r:gz') as archive:
+        with installer_archive(file) as archive:
             members=archive.getmembers()
             validate_archive(members)
             prompt=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,buttons=Gtk.ButtonsType.OK_CANCEL,text='¿Instalar esta actualización de Proton Drive?')

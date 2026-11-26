@@ -18,6 +18,16 @@ class DownloadInstall(unittest.TestCase):
    with patch.object(module,'STATE',root),patch.object(module,'launch_archive',return_value={'updating':True}) as launch:
     self.assertEqual(module.install_downloaded(str(file),sha,'0.16.2',confirm=lambda _:False),{'cancelled':True});launch.assert_not_called()
     self.assertEqual(module.install_downloaded(str(file),sha,'0.16.2',confirm=lambda m:m['repository']=='FerCueA/archivia'),{'updating':True});self.assertEqual(launch.call_count,1)
+ def test_verified_run_payload_supports_random_access_extraction(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   root=Path(tmp);file,sha=self.package(root)
+   with patch.object(module,'STATE',root):
+    with module.downloaded_archive(str(file),sha,'0.16.2') as (archive,members,_):
+     contents=[]
+     for member in reversed(members):
+      if member.isfile():
+       with archive.extractfile(member) as source:contents.append(source.read())
+     self.assertEqual(set(contents),{b'executable',b'installer',b'tray',json.dumps({'version':'0.16.2','platform':'linux','arch':'x64'}).encode()})
  def test_tampered_bytes_wrong_version_and_links_are_rejected_before_confirmation(self):
   with tempfile.TemporaryDirectory() as tmp:
    root=Path(tmp);file,sha=self.package(root)
