@@ -1,9 +1,9 @@
-# Compatibilidad de Proton Drive no oficial · 0.16.2
+# Compatibilidad de Proton Drive no oficial · 0.16.3
 
 | Entorno | Comprobaciones realizadas | Alcance |
 |---|---|---|
 | Linux Mint 22.3 / Cinnamon / X11 · x86-64 | Instalación, programa conectado, bandeja y pruebas de funciones | Equipo de desarrollo |
-| Ubuntu Desktop 24.04 LTS · x86-64 | Dependencias, instalador aislado, 130 pruebas Bun, 26 pruebas Python, servicio con llavero Secret Service y ventana GTK/WebKit con siete pestañas | Contenedor Ubuntu 24.04; ventana en Xvfb |
+| Ubuntu Desktop 24.04 LTS · x86-64 | Dependencias, instalador aislado, 140 pruebas Bun, 29 pruebas Python, servicio con llavero Secret Service y ventana GTK/WebKit con siete pestañas | Contenedor Ubuntu 24.04; ventana en Xvfb |
 | GNOME con X11 o Wayland | Selección de AppIndicator, diagnóstico y lanzador acorde con el identificador GTK | Pruebas de selección; falta sesión GNOME/Wayland interactiva completa |
 | Ubuntu 22.04, 26.04 y otras distribuciones | Diagnóstico de dependencias disponible | Sin validación completa específica |
 | ARM o Linux de 32 bits | No hay ejecutable incluido para estas arquitecturas | Necesita otra compilación |
@@ -30,7 +30,7 @@ Las notificaciones, el inicio automático, la papelera, el selector de archivos 
 ## Comprobar sin instalar
 
 ```bash
-bash Archivia-0.16.2-linux-x64.run --check
+bash Archivia-0.16.3-linux-x64.run --check
 ```
 
 El diagnóstico no modifica la aplicación. Comprueba x86-64, SSE4.2, glibc y bibliotecas; informa de componentes opcionales. El ejecutable usa el objetivo `bun-linux-x64-baseline`, sin exigir AVX2. Las distribuciones o arquitecturas sin dependencias compatibles no quedan soportadas por mostrar este diagnóstico.
